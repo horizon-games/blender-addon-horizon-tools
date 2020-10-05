@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Horizon Games Toolkit",
     "author": "Tomasz Dysinski",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (2, 91, 0),
     "location": "Properties > Scene > Horizon Tools",
     "description": "Manages custom geometry for centroid based vertex effects during GLTF Export",
@@ -13,29 +13,37 @@ bl_info = {
 
 import importlib
 if "bpy" in locals():
-    importlib.reload(sceneTools)
     importlib.reload(customExport)
+    importlib.reload(bakeAmbientOcclusionToVertexColor)
+    importlib.reload(squashAttributes)
+    importlib.reload(copyVertexColorChannels)
+    importlib.reload(sceneTools)
+    importlib.reload(objectDataTools)
 else:
-    from . import sceneTools
     from . import customExport
+    from . import bakeAmbientOcclusionToVertexColor
+    from . import squashAttributes
+    from . import copyVertexColorChannels
+    from . import sceneTools
+    from . import objectDataTools
 
 import bpy
 
-
-# ### REGISTER ###
-
-
-
 def register():
-    sceneTools.register()
     customExport.register()
-
-
+    bakeAmbientOcclusionToVertexColor.register()
+    squashAttributes.register()
+    copyVertexColorChannels.register()
+    sceneTools.register()
+    objectDataTools.register()
 
 def unregister():
-    sceneTools.unregister()
     customExport.unregister()
-
+    bakeAmbientOcclusionToVertexColor.unregister()
+    squashAttributes.unregister()
+    copyVertexColorChannels.unregister()
+    sceneTools.unregister()
+    objectDataTools.unregister()
 
 if __name__ == "__main__":
     register()

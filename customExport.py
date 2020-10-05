@@ -17,7 +17,7 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
 
-class ExportCustomGLTF(Operator, ExportHelper):
+class HORIZON_OT_ExportCustomGLTF(Operator, ExportHelper):
     """This appears in the tooltip of the operator and in the generated docs"""
     bl_idname = "horizon.export_custom_gltf"
     bl_label = "Export Custom GLTF"
@@ -55,16 +55,16 @@ class ExportCustomGLTF(Operator, ExportHelper):
 
 # Only needed if you want to add into a dynamic menu
 def menu_func_export(self, context):
-    self.layout.operator(ExportCustomGLTF.bl_idname, text="Horizon Custom GLTF Export Operator")
+    self.layout.operator(HORIZON_OT_ExportCustomGLTF.bl_idname, text="Horizon Custom GLTF Export Operator")
 
 
 def register():
-    bpy.utils.register_class(ExportCustomGLTF)
+    bpy.utils.register_class(HORIZON_OT_ExportCustomGLTF)
     # bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 
 def unregister():
-    bpy.utils.unregister_class(ExportCustomGLTF)
+    bpy.utils.unregister_class(HORIZON_OT_ExportCustomGLTF)
     # bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 

@@ -1,7 +1,7 @@
 import bpy
 
 
-class SceneToolsUI(bpy.types.Panel):
+class HORIZON_PT_SceneToolsUI(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
     bl_label = "Horizon Scene Tools"
     bl_idname = "horizon.scene_tools"
@@ -19,11 +19,11 @@ class SceneToolsUI(bpy.types.Panel):
 
 
 def register():
-    bpy.utils.register_class(SceneToolsUI)
+    bpy.utils.register_class(HORIZON_PT_SceneToolsUI)
 
 
 def unregister():
-    bpy.utils.unregister_class(SceneToolsUI)
+    bpy.utils.unregister_class(HORIZON_PT_SceneToolsUI)
 
 
 if __name__ == "__main__":

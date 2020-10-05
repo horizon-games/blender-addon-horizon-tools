@@ -1,0 +1,10 @@
+shader vertexColorsOut(
+    color color1RGB = 1.0,
+    float color1A = 1.0,
+    color color2RGB = 1.0,
+    float color2A = 1.0,
+    point uv1 = 1.0,
+    point uv2 = 1.0,
+) {
+   //just used for export script 
+}

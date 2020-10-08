@@ -293,7 +293,7 @@ def squashAttributes(context):
         propName = downLink.from_socket.identifier
         if(propName == 'Normal'):
             loop = ob.data.loops[attrLoop]
-            vec = ob.data.vertices[loop.vertex_index].normal
+            vec = loop.normal
     #        vec = list(vec[:])
     #        vec.append(1.0)
             return vec
@@ -346,7 +346,6 @@ def squashAttributes(context):
         gamma = coerceFac(getInputColor(tree, node, 'Gamma', attrLoop))
         gamma = pow(gamma, 2.2)
         gammaCorrect(color, gamma)
-        gammaCorrect(color, 2.2)
         return color
 
     def resolveShaderNodeMath(tree, node, downLink, attrLoop):

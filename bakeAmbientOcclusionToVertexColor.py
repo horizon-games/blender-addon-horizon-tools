@@ -103,27 +103,28 @@ def bakeSelected(context):
     verts = ob.data.vertices
     def shadow(attrLoop):
         loop = ob.data.loops[attrLoop]
+        # dir = [0.0, 1.0, 0.0]
         dir = list(loop.normal)
         dirEul = mathutils.Euler(dir, 'XYZ')
         averageNormal = list(verts[loop.vertex_index].normal)
         pos = list(verts[loop.vertex_index].co)
-        offsetNormal = mix(averageNormal, dir, 1.0)
+        offsetNormal = mix(averageNormal, dir, 0.1)
         offset = np.multiply(offsetNormal, 0.001)
         pos = np.add(pos, offset)
         shade = 0.0
         for i in range(200):
-            fuzzyEul = mathutils.Euler(fibonacci_spiral_sphere(i, 200), 'XYZ')
+            fuzzyEul = mathutils.Euler(fibonacci_spiral_sphere(i, 260), 'XYZ')
             fuzzyQuat = fuzzyEul.to_quaternion()
             dirQuat = dirEul.to_quaternion()
             dirQuat.rotate(fuzzyQuat)
-            dirQuat.rotate(fuzzyQuat)
-            # finalDir = dirQuat.to_euler('XYZ')
-            finalDir = fuzzyEul
+            finalDir = dirQuat.to_euler('XYZ')
+            # finalDir = fuzzyEul
             hit, normal, index, distance = tree.ray_cast(pos, finalDir, 1.5)
             if(not hit == None):
                 shade += 1.0
             
-        light = 1.0 - shade / 200.0
+        # light = (1.0 - shade / 200.0) + 0.6
+        light = (1.0 - shade / 200.0)
     #    return dir
         return [light, light, light, 1,0]
 

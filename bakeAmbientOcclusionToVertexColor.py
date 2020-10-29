@@ -24,18 +24,7 @@ def bakeSelected(context):
         obCaster = bpy.data.objects[context.scene.bake_ao_vars.nameSrc]
     else:
         obCaster = ob
-    # get the material
-    mat = bpy.data.materials['surface']
-    # get the nodes
-    nodes = mat.node_tree.nodes
-
-    # get the links
-    links = mat.node_tree.links
-
-    # get some specific node:
-    # returns None if the node does not exist
-    exporterMatNode = nodes.get("exporter")
-
+        
     def gammaCorrect(color, gamma):
         # if(not isinstance(color, list)):
             # print('??'+str(color))

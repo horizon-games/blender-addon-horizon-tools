@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Horizon Games Toolkit",
     "author": "Tomasz Dysinski",
-    "version": (1, 0, 2),
+    "version": (1, 0, 3),
     "blender": (2, 91, 0),
     "location": "Properties > Scene > Horizon Tools",
     "description": "Manages custom geometry for centroid based vertex effects during GLTF Export",

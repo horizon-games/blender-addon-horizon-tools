@@ -50,7 +50,37 @@ class HORIZON_OT_ExportCustomGLTF(Operator, ExportHelper):
     )
 
     def execute(self, context):
-        return write_some_data(context, self.filepath, self.use_setting)
+        context.area.type = 'VIEW_3D'
+        for obj in context.scene.objects: 
+            context.view_layer.objects.active = obj
+            if obj.data.shape_keys:
+                print(obj.name, obj, obj.type)
+
+                # remove all shape keys
+                shapeKeys = obj.data.shape_keys.key_blocks
+                while len(shapeKeys) > 1:
+                    obj.active_shape_key_index = 1
+                    bpy.ops.object.shape_key_remove(all=False) #shapekeys removed backwards to Basis on original object
+                obj.active_shape_key_index = 0
+                bpy.ops.object.shape_key_remove(all=False)
+
+                modifier = obj.modifiers.new(name='EdgeSplit', type='EDGE_SPLIT')
+                modifier.use_edge_angle = False
+                bpy.ops.object.modifier_apply(modifier=modifier.name)
+                # bpy.ops.horizon.generate_centroid_shape_keys()
+
+        bpy.ops.export_scene.gltf(
+            filepath = self.filepath,
+            use_selection = True,
+            export_selected = True,
+            export_format = 'GLTF_SEPARATE',
+            export_colors = True,
+            export_morph = True,
+            export_morph_normal = False
+        )
+        context.area.type = 'PROPERTIES'
+        return {'FINISHED'}
+        # return write_some_data(context, self.filepath, self.use_setting)
 
 
 # Only needed if you want to add into a dynamic menu

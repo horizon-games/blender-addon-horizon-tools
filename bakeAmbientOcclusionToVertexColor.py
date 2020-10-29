@@ -162,6 +162,7 @@ def bakeSelected(context):
 class HORIZON_OT_BakeAmbientOcclusionToVertexColor(Operator):
     bl_idname = "horizon.bake_ambient_occlusion_to_vertex_color"
     bl_label = "Bake AO To Vertex Colors"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         bakeSelected(context)

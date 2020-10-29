@@ -192,6 +192,7 @@ def copyVertexColorChannels(context):
 class HORIZON_OT_CopyVertexColorChannels(Operator):
     bl_idname = "horizon.copy_vertex_color_channels"
     bl_label = "Copy Vertex Color Channels"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         copyVertexColorChannels(context)

@@ -17,6 +17,8 @@ if "bpy" in locals():
     importlib.reload(bakeAmbientOcclusionToVertexColor)
     importlib.reload(squashAttributes)
     importlib.reload(copyVertexColorChannels)
+    importlib.reload(applyModifiers)
+    importlib.reload(generateCentroidShapeKeys)
     importlib.reload(sceneTools)
     importlib.reload(objectDataTools)
 else:
@@ -24,6 +26,8 @@ else:
     from . import bakeAmbientOcclusionToVertexColor
     from . import squashAttributes
     from . import copyVertexColorChannels
+    from . import applyModifiers
+    from . import generateCentroidShapeKeys
     from . import sceneTools
     from . import objectDataTools
 
@@ -34,6 +38,8 @@ def register():
     bakeAmbientOcclusionToVertexColor.register()
     squashAttributes.register()
     copyVertexColorChannels.register()
+    applyModifiers.register()
+    generateCentroidShapeKeys.register()
     sceneTools.register()
     objectDataTools.register()
 
@@ -42,6 +48,8 @@ def unregister():
     bakeAmbientOcclusionToVertexColor.unregister()
     squashAttributes.unregister()
     copyVertexColorChannels.unregister()
+    applyModifiers.unregister()
+    generateCentroidShapeKeys.unregister()
     sceneTools.unregister()
     objectDataTools.unregister()
 

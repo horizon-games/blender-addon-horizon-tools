@@ -60,6 +60,10 @@ class HORIZON_PT_ObjectDataToolsUI(bpy.types.Panel):
         if scn.show_options_03:
             row = layout.row()
             row.operator("horizon.squash_attributes")
+            row = layout.row()
+            row.operator("horizon.generate_centroid_shape_keys")
+            row = layout.row()
+            row.operator("horizon.apply_modifiers_to_selected")
 
 
 def register():

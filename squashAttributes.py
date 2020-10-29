@@ -5,6 +5,9 @@ from bpy.types import Operator
 import traceback
 import mathutils
 
+def clamp(value, minVal, maxVal):
+    return min(maxVal, max(minVal, value))
+
 def squashAttributes(context):
     def print(data):
         for window in bpy.context.window_manager.windows:
@@ -165,6 +168,9 @@ def squashAttributes(context):
         elif(mode == 'MULTIPLY'):
             colorFinal = np.multiply(color1, color2)
             gammaCorrect(colorFinal, ig)
+        elif(mode == 'DIVIDE'):
+            colorFinal = np.divide(color1, color2)
+            gammaCorrect(colorFinal, ig)
         elif(mode == 'MIX'):
             colorFinal = gammaCorrect(color2.copy(), 0.5)
         elif(mode == 'LIGHTEN'):
@@ -215,7 +221,7 @@ def squashAttributes(context):
 
     def resolveShaderNodeMapRange(tree, node, downLink, attrLoop):
         valLink = getInputLink(tree, node, 'Value')
-        value = coerceFac(resolveAnyNode(tree, valLink.from_node, valLink, attrLoop))
+        value = clamp(coerceFac(resolveAnyNode(tree, valLink.from_node, valLink, attrLoop)), 0.0, 1.0)
         value = pow(value, 2.2)
         fromMin = getInput(node, 'From Min').default_value
         fromMax = getInput(node, 'From Max').default_value
@@ -319,6 +325,7 @@ def squashAttributes(context):
         uv = ob.data.uv_layers[node.uv_map].data[attrLoop].uv
         uv = list(uv)
         uv.append(0.0)
+        uv.append(0.0)
         return uv
 
     def resolveShaderNodeSeparateRGB(tree, node, downLink, attrLoop):
@@ -386,6 +393,10 @@ def squashAttributes(context):
         maxVal = getInput(node, 'Max').default_value
         return min(maxVal, max(minVal, value))
 
+    def resolveShaderNodeValue(tree, node, downLink, attrLoop):
+        describeThing(node)
+        return list(getInput(node, 'Value').default_value)
+
 
     def resolveShaderNodeGroup(tree, node, downLink, attrLoop):
         gNodes = node.node_tree.nodes
@@ -434,6 +445,8 @@ def squashAttributes(context):
             return resolveShaderNodeClamp(tree, node, link, attrLoop)
         elif(nodeType == 'ShaderNodeGroup'):
             return resolveShaderNodeGroup(tree, node, link, attrLoop)
+        # elif(nodeType == 'ShaderNodeValue'):
+        #     return resolveShaderNodeValue(tree, node, link, attrLoop)
         else:
             pr('/!\ unsupported node type: ' + nodeType + '. returning white')
             return [1.0, 1.0, 1.0, 1.0]
@@ -495,9 +508,9 @@ def squashAttributes(context):
             dst = ob.data.vertex_colors[dstName]
             for l in range(loops):
                 cSrc = solveInput(baseTree, getInput(matNode, srcName), matNode, l)
-        #        cSrc = gammaCorrect(cSrc, 0.4545)
+                cSrc = gammaCorrect(cSrc, 0.4545)
                 cDst = dst.data[l].color
-                describeThing(cSrc)
+                # describeThing(cSrc)
                 if(singleChannel == None):
                     cDst[0] = cSrc[0]
                     cDst[1] = cSrc[1]
@@ -512,12 +525,17 @@ def squashAttributes(context):
             dst = ob.data.uv_layers[dstName]
             for l in range(loops):
                 cSrc = solveInput(baseTree, getInput(matNode, srcName), matNode, l)
-        #        cSrc = gammaCorrect(cSrc, 0.4545)
+                # cSrc = gammaCorrect(cSrc, 2.2)
+                # cSrc = gammaCorrect(cSrc, 2.2)
+                # cSrc = gammaCorrect(cSrc, 2.2)
                 cDst = dst.data[l].uv
-                describeThing(cSrc)
+                # describeThing(cSrc)
                 if(singleChannel == None):
+                    # cSrc = coerceColor(cSrc)
                     cDst[0] = cSrc[0]
                     cDst[1] = cSrc[1]
+                    # cDst[0] = 0.5
+                    # cDst[1] = 0.5
                 else:
                     fac = coerceFac(cSrc)
                     cDst[singleChannel] = fac
@@ -559,6 +577,7 @@ def squashAttributes(context):
 class HORIZON_OT_SquashAttributes(Operator):
     bl_idname = "horizon.squash_attributes"
     bl_label = "Squash Attributes"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         squashAttributes(context)

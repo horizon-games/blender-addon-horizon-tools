@@ -198,7 +198,7 @@ def squashAttributes(context):
             gammaCorrect(color2, ig)
 
             fac = facForLoop(attrLoop)
-            pr('  link3: ' + getLinkDetails(link3))
+            # pr('  link3: ' + getLinkDetails(link3))
             pr('  color1: ' + str(color1))
             pr('  colorFinal: ' + str(colorFinal))
             return lerp(color1, colorFinal, fac)
@@ -257,56 +257,50 @@ def squashAttributes(context):
         link1 = getInputLink(tree, node, 'Vector')
         link2 = getInputLink(tree, node, 'Vector_001', True)
         resolveAnyNodeForLoop1 = resolveAnyNode(tree, link1.from_node, link1)
-        resolveAnyNodeForLoop2 = resolveAnyNode(tree, link2.from_node, link2)
+        if(link2):
+            getInput2Value = resolveAnyNode(tree, link2.from_node, link2)
+        else:
+            defaultValue = list(getInput(node, 'Vector_001').default_value)
+            def getInput2Value(attrLoop):
+                return defaultValue
+
         op = node.operation
         if(op == 'DOT_PRODUCT'):
             def resolveShaderNodeVectorDotProductForLoop(attrLoop):
                 vec1 = resolveAnyNodeForLoop1(attrLoop)
-                if(link2):
-                    vec2 = resolveAnyNodeForLoop2(attrLoop)
-                else:
-                    vec2 = list(getInput(node, 'Vector_001').default_value)
+                vec2 = getInput2Value(attrLoop)
                 val = float(np.dot(vec1, vec2))
                 val = max(0.0, val)
-                describeThing(val)
+                # describeThing(val)
                 color = [val, val, val, 1.0]
-                describeThing(color)
+                # describeThing(color)
                 gammaCorrect(color, 0.4545)
                 return color
             return resolveShaderNodeVectorDotProductForLoop
         elif(op == 'ADD'):
             def resolveShaderNodeVectorAddForLoop(attrLoop):
                 vec1 = resolveAnyNodeForLoop1(attrLoop)
-                if(link2):
-                    vec2 = resolveAnyNodeForLoop2(attrLoop)
-                else:
-                    vec2 = list(getInput(node, 'Vector_001').default_value)
+                vec2 = getInput2Value(attrLoop)
                 return np.add(vec1, vec2)
             return resolveShaderNodeVectorAddForLoop
         elif(op == 'SUBTRACT'):
             def resolveShaderNodeVectorSubtractForLoop(attrLoop):
                 vec1 = resolveAnyNodeForLoop1(attrLoop)
-                if(link2):
-                    vec2 = resolveAnyNodeForLoop2(attrLoop)
-                else:
-                    vec2 = list(getInput(node, 'Vector_001').default_value)
-                describeThing(vec1)
-                describeThing(vec2)
+                vec2 = getInput2Value(attrLoop)
+                # describeThing(vec1)
+                # describeThing(vec2)
                 final = np.subtract(vec1, vec2)
-                describeThing(final)
+                # describeThing(final)
                 return final
             return resolveShaderNodeVectorSubtractForLoop
         elif(op == 'MULTIPLY'):
             def resolveShaderNodeVectorMultiplyForLoop(attrLoop):
                 vec1 = resolveAnyNodeForLoop1(attrLoop)
-                if(link2):
-                    vec2 = resolveAnyNodeForLoop2(attrLoop)
-                else:
-                    vec2 = list(getInput(node, 'Vector_001').default_value)
-                describeThing(vec1)
-                describeThing(vec2)
+                vec2 = getInput2Value(attrLoop)
+                # describeThing(vec1)
+                # describeThing(vec2)
                 final = np.multiply(vec1, vec2)
-                describeThing(final)
+                # describeThing(final)
                 return final
             return resolveShaderNodeVectorMultiplyForLoop
         else:

@@ -4,6 +4,7 @@ import numpy as np
 from bpy.types import Operator
 import traceback
 import mathutils
+import time
 
 def clamp(value, minVal, maxVal):
     return min(maxVal, max(minVal, value))
@@ -18,6 +19,8 @@ def squashAttributes(context):
                     bpy.ops.console.scrollback_append(override, text=str(data), type="OUTPUT")
 
     ob = bpy.context.active_object
+
+    timeStart = time.time()
 
     print('---')
     # get the material
@@ -570,6 +573,10 @@ def squashAttributes(context):
             dataTransferColor(mixerMatNode, loops, vertexColorDstName, 'color1RGB')
             dataTransferColor(mixerMatNode, loops, vertexColorDstName, 'color1A', 3)
             verbose = True
+
+    
+    duration = time.time() - timeStart
+    print('time to complete: ' + str(duration) + ' seconds')
 
 
 

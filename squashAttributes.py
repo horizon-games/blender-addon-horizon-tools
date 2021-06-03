@@ -343,6 +343,15 @@ def squashAttributes(context):
         #        vec.append(1.0)
                 return vec
             return resolveShaderNodeNewGeometryForLoop
+        elif(propName == 'Position'):
+            def resolveShaderNodeNewGeometryForLoop(attrLoop):
+                loop = ob.data.loops[attrLoop]
+                vecIndex = loop.vertex_index
+                vec = ob.data.vertices[vecIndex].co
+        #        vec = list(vec[:])
+        #        vec.append(1.0)
+                return vec
+            return resolveShaderNodeNewGeometryForLoop
         else:
             pr('/!\ unsupported transform type: ' + type + '. returning white')
             return lambda _: [1.0, 1.0, 1.0, 1.0]

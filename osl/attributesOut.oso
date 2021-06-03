@@ -1,0 +1,12 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.10.10
+# options: -o /var/folders/9j/s986zj3575d_p6ns3hqf3sn00000gn/T/tmpjp0ys625.oso -I/Applications/Blender.app/Contents/Resources/2.91/scripts/addons/cycles/shader
+shader vertexColorsOut
+param	color	color1RGB	1 1 1		%read{2147483647,-1} %write{2147483647,-1}
+param	float	color1A	1		%read{2147483647,-1} %write{2147483647,-1}
+param	color	color2RGB	1 1 1		%read{2147483647,-1} %write{2147483647,-1}
+param	float	color2A	1		%read{2147483647,-1} %write{2147483647,-1}
+param	point	uv1	1 1 1		%read{2147483647,-1} %write{2147483647,-1}
+param	point	uv2	1 1 1		%read{2147483647,-1} %write{2147483647,-1}
+code ___main___
+	end

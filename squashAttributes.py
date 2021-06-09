@@ -145,6 +145,23 @@ def squashAttributes(context):
             c = gammaCorrect(coerceColor(c), 0.4545)
             return lambda _: list(c)
 
+    def getInputValue(tree, node, identifier):
+        link = getInputLink(tree, node, identifier, True)
+        
+        if(link):
+            pr('  link: ' + getLinkDetails(link))
+
+        if(link):
+            resolveAnyNodeForLoop = resolveAnyNode(tree, link.from_node, link)
+            def getInputColorForLoop(attrLoop):
+                return coerceColor(resolveAnyNodeForLoop(attrLoop))
+            return getInputColorForLoop
+        else:
+            c = getInput(node, identifier).default_value
+            pr('-----' + str(c))
+            c = coerceColor(c)
+            return lambda _: list(c)
+
     def describeInputs(node):
         pr('  ' + node.name + ' inputs:')
         for i in node.inputs:
@@ -303,6 +320,15 @@ def squashAttributes(context):
                 # describeThing(final)
                 return final
             return resolveShaderNodeVectorMultiplyForLoop
+        elif(op == 'ABSOLUTE'):
+            def resolveShaderNodeVectorAbsoluteForLoop(attrLoop):
+                vec1 = resolveAnyNodeForLoop1(attrLoop)
+                # describeThing(vec1)
+                # describeThing(vec2)
+                final = np.absolute(vec1)
+                # describeThing(final)
+                return final
+            return resolveShaderNodeVectorAbsoluteForLoop
         else:
             pr('/!\ unsupported node type: ' + op + '. returning white')
             return lambda _: [1.0, 1.0, 1.0, 1.0]
@@ -332,29 +358,29 @@ def squashAttributes(context):
             pr('/!\ unsupported transform type: ' + type + '. returning white')
             return lambda _: [1.0, 1.0, 1.0, 1.0]
 
-    def resolveShaderNodeNewGeometry(tree, node, downLink):
+    def resolveShaderNodeGeometry(tree, node, downLink):
         describeInputs(node)
         propName = downLink.from_socket.identifier
         if(propName == 'Normal'):
-            def resolveShaderNodeNewGeometryForLoop(attrLoop):
+            def resolveShaderNodeGeometryForLoop(attrLoop):
                 loop = ob.data.loops[attrLoop]
                 vec = loop.normal
         #        vec = list(vec[:])
         #        vec.append(1.0)
                 return vec
-            return resolveShaderNodeNewGeometryForLoop
+            return resolveShaderNodeGeometryForLoop
         elif(propName == 'Position'):
-            def resolveShaderNodeNewGeometryForLoop(attrLoop):
+            def resolveShaderNodeGeometryForLoop(attrLoop):
                 loop = ob.data.loops[attrLoop]
                 vecIndex = loop.vertex_index
                 vec = ob.data.vertices[vecIndex].co
         #        vec = list(vec[:])
         #        vec.append(1.0)
                 return vec
-            return resolveShaderNodeNewGeometryForLoop
+            return resolveShaderNodeGeometryForLoop
         else:
-            pr('/!\ unsupported transform type: ' + type + '. returning white')
-            return lambda _: [1.0, 1.0, 1.0, 1.0]
+            pr('/!\ unsupported transform type: ' + propName + '. returning magenta')
+            return lambda _: [1.0, 0.0, 1.0, 1.0]
 
     def resolveShaderNodeAttribute(tree, node, downLink):
         data = ob.data.vertex_colors[node.attribute_name].data
@@ -416,6 +442,29 @@ def squashAttributes(context):
             b = coerceFac(getInputBForLoop(attrLoop))
             return [r, g, b, 1.0]
         return resolveShaderNodeCombineRGBForLoop
+
+    def resolveShaderNodeSeparateXYZ(tree, node, downLink):
+        channel = downLink.from_socket.identifier
+        if(channel == 'X'):
+            getInputImageForLoop = getInputValue(tree, node, 'Vector')
+            def resolveShaderNodeSeparateX(attrLoop):
+                c = getInputImageForLoop(attrLoop)
+                return [c[0], c[0], c[0], 1.0]
+            return resolveShaderNodeSeparateX
+        elif(channel == 'Y'):
+            getInputImageForLoop = getInputValue(tree, node, 'Vector')
+            def resolveShaderNodeSeparateY(attrLoop):
+                c = getInputImageForLoop(attrLoop)
+                return [c[1], c[1], c[1], 1.0]
+            return resolveShaderNodeSeparateY
+        elif(channel == 'Z'):
+            getInputImageForLoop = getInputValue(tree, node, 'Vector')
+            def resolveShaderNodeSeparateZ(attrLoop):
+                c = getInputImageForLoop(attrLoop)
+                return [c[2], c[2], c[2], 1.0]
+            return resolveShaderNodeSeparateZ
+        else:
+            return lambda _: [1.0, 0.0, 1.0, 1.0]
 
     def resolveShaderNodeGamma(tree, node, downLink):
         getInputColorForLoop = getInputColor(tree, node, 'Color')
@@ -554,7 +603,7 @@ def squashAttributes(context):
         elif(nodeType == 'ShaderNodeVectorTransform'):
             return resolveShaderNodeVectorTransform(tree, node, link)
         elif(nodeType == 'ShaderNodeNewGeometry'):
-            return resolveShaderNodeNewGeometry(tree, node, link)
+            return resolveShaderNodeGeometry(tree, node, link)
         elif(nodeType == 'ShaderNodeAttribute'):
             return resolveShaderNodeAttribute(tree, node, link)
         elif(nodeType == 'NodeReroute'):
@@ -565,6 +614,8 @@ def squashAttributes(context):
             return resolveShaderNodeCombineRGB(tree, node, link)
         elif(nodeType == 'ShaderNodeSeparateRGB'):
             return resolveShaderNodeSeparateRGB(tree, node, link)
+        elif(nodeType == 'ShaderNodeSeparateXYZ'):
+            return resolveShaderNodeSeparateXYZ(tree, node, link)
         elif(nodeType == 'ShaderNodeGamma'):
             return resolveShaderNodeGamma(tree, node, link)
         elif(nodeType == 'ShaderNodeMath'):
@@ -639,6 +690,8 @@ def squashAttributes(context):
             dst = ob.data.vertex_colors[dstName]
             solveInputForLoop = solveInput(baseTree, getInput(matNode, srcName), matNode)
             for l in range(loops):
+                # if((l % 100) < 50):
+                #     continue
                 cSrc = solveInputForLoop(l)
                 cSrc = gammaCorrect(cSrc, 0.4545)
                 cDst = dst.data[l].color

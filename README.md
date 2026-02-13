@@ -7,7 +7,7 @@ This addon is a suite of tools to help in the creation and export of assets with
 ## Installation ##
 1. Download or clone this repository
 2. Install the addon (https://docs.blender.org/manual/en/latest/editors/preferences/addons.html)
-3. Enable the addon titled "Scene: Horizon Tools"
+3. Enable the addon titled "Scene: Sequence Tools"
 
 
 # development #
